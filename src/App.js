@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 // API documentation: https://openweathermap.org/current
+// Hello there
 const defaultConfig = {
     city: "Waterloo",
 
