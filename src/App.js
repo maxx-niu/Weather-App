@@ -1,25 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from "react";
+import 'bootstrap/dist/css/bootstrap.min.css'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// API documentation: https://openweathermap.org/current
+const defaultConfig = {
+    city: "Waterloo",
+
 }
 
-export default App;
+const App = () => {
+
+    const [city, setCity] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        alert("form submitted!");
+        setCity('');
+    }
+
+    return <>
+        <h1>Hello</h1>
+        <form onSubmit={handleSubmit}>
+            <label htmlFor="city">Search Weather by City: </label>
+            <input type="text" id="city" name="city" value={city}
+            placeholder="Waterloo"
+            onChange={(e) => {setCity(e.target.value)}} />
+        </form>
+        {/* <h2>{process.env.REACT_APP_API_KEY}</h2> */}
+    </>
+}
+
+export default App
