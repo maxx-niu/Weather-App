@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import Modal from './Modal';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Results from "./Results";
+import { useGeoLocation } from "./useGeoLocation";
 
 // API documentation: https://openweathermap.org/current
 const defaultConfig = {
@@ -10,16 +11,26 @@ const defaultConfig = {
 
 const App = () => {
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false); // for modal
     const [city, setCity] = useState('');
     const [country, setCountry] = useState('');
+    const [hasResult, setHasResult] = useState(false);
+    const [displayData, setDisplayData] = useState({});
+    const location = useGeoLocation();
+
+    // useEffect(() => {
+    //     if(location.loaded){
+    //         location.loaded
+    //     }
+    // }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if(city && country){
             // on user input
-            setIsOpen(false);
+            setIsModalOpen(false);
             const fetchURL = process.env.REACT_APP_BASE_URL + 'weather?q=' + city + ',' + country + '&appid=' + process.env.REACT_APP_API_KEY;
+            console.log(fetchURL);
             fetch(fetchURL)
                 .then(res => {
                     if(res.ok){
@@ -27,42 +38,57 @@ const App = () => {
                     }
                     throw new Error('something went wrong, status: ' + res.status);
                 })
-                .then(data => {
+                .then(data => { // on successful data fetch
                     console.log(data);
+                    setDisplayData(data);
+                    setHasResult(true);
                 })
                 .catch(err => {
                     console.log(err);
                 })
         } else {
             // if user didn't enter valid city/country, 
-            setIsOpen(true);
+            setIsModalOpen(true);
         }
         setCity('');
         setCountry('');
     }
 
-    return <>
-        <h1>Hello</h1>
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="city">City : </label>
-                <input type="text" id="city" name="city" value={city}
-                placeholder={defaultConfig.city}
-                onChange={(e) => {setCity(e.target.value)}} />
-            </div>
-            <div>
-                <label htmlFor="country">Country : </label>
-                <input type="text" id="country" name="country" value={country}
-                placeholder={defaultConfig.country}
-                onChange={(e) => {setCountry(e.target.value)}} />
-            </div>
-            <button type='submit'>Submit</button>
-        </form>
-        <Modal open={isOpen} onClose={() => {setIsOpen(false)}}>
-            Please input a valid city and country!
-        </Modal>
-        {/* <h2>{process.env.REACT_APP_API_KEY}</h2> */}
-    </>
+    return (
+        <div className="app">
+            <main>
+                <div className="search-box">
+                <form onSubmit={handleSubmit}>
+                    <div className="search-bars">
+                        <input type="text" id="city" name="city" value={city}
+                        placeholder="Enter a city"
+                        onChange={(e) => {setCity(e.target.value)}} className="search-bar"/>
+                    </div>
+                    <div className="search-bars">
+                        <input type="text" id="country" name="country" value={country}
+                        placeholder="Enter a country"
+                        onChange={(e) => {setCountry(e.target.value)}} className="search-bar"/>
+                    </div>
+                    <button type='submit' className="submit">Submit</button>
+                </form>
+                </div>
+                <div className="location-box">
+                    <div className="location"></div>
+                    <div className="date"></div>
+                </div>
+                <Modal open={isModalOpen} onClose={() => {setIsModalOpen(false)}}>
+                    Please input a valid city and country!
+                </Modal>
+                <Results hasResult={hasResult} displayData={displayData}>hi there</Results>
+            </main>
+        </div>
+    )
 }
 
 export default App
+
+/*
+    1. get user geolocation
+    2. make api call to weather app using geolocation
+    3. display it
+*/
