@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Modal from './Modal';
 import Results from "./Results";
 import { useGeoLocation } from "./useGeoLocation";
@@ -16,13 +16,8 @@ const App = () => {
     const [country, setCountry] = useState('');
     const [hasResult, setHasResult] = useState(false);
     const [displayData, setDisplayData] = useState({});
-    const location = useGeoLocation();
 
-    // useEffect(() => {
-    //     if(location.loaded){
-    //         location.loaded
-    //     }
-    // }, []);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -54,6 +49,24 @@ const App = () => {
         setCountry('');
     }
 
+    const handleCurrentLocation = () => {
+
+    }
+
+    const dateBuilder = (d) => {
+        const months = ["January","February","March","April","May","June","July",
+        "August","September","October","November","December"];
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+        "Saturday"];
+
+        const day = days[d.getDay()];
+        const date = d.getDate();
+        const month = months[d.getMonth()];
+        const year = d.getFullYear();
+
+        return `${day} ${month} ${date}, ${year}`;
+    }
+
     return (
         <div className="app">
             <main>
@@ -71,10 +84,18 @@ const App = () => {
                     </div>
                     <button type='submit' className="submit">Submit</button>
                 </form>
+                <h3>Or...</h3>
+                <form onSubmit={handleCurrentLocation}>
+                    <button type='submit'>Get Current Location Weather Data</button>
+                </form>
                 </div>
                 <div className="location-box">
-                    <div className="location"></div>
-                    <div className="date"></div>
+                    <div className="location">Location Data Goes Here</div>
+                    <div className="date">{dateBuilder(new Date())}</div>
+                </div>
+                <div className="weather-box">
+                    <div className="temp">15</div>
+                    <div className="weather">Sunny</div>
                 </div>
                 <Modal open={isModalOpen} onClose={() => {setIsModalOpen(false)}}>
                     Please input a valid city and country!
