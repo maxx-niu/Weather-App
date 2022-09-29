@@ -60,7 +60,7 @@ main {
     transition: 0.4s ease;
 }
 
-.search-box .search-bar:focus {
+.search-box .search-bar:hover {
     background-color: rgba(255, 255, 255, 0.75);
 }
 
