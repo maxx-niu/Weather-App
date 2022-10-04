@@ -1,13 +1,8 @@
 import React, {useState, useEffect} from "react";
 import Modal from './Modal';
 import Results from "./Results";
-import Switch from "./Switch";
 
 // API documentation: https://openweathermap.org/current
-const defaultConfig = {
-    city: "Waterloo",
-    country: "Canada"
-}
 
 const App = () => {
 
@@ -16,7 +11,7 @@ const App = () => {
     const [country, setCountry] = useState('');
     const [hasResult, setHasResult] = useState(false);
     const [displayData, setDisplayData] = useState({});
-    const [isToggleFarenheit, setIsToggleFarenheit] = useState(false);
+    const [weatherCond, setWeatherCond] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -24,7 +19,6 @@ const App = () => {
             // on user input
             setIsModalOpen(false);
             const fetchURL = process.env.REACT_APP_BASE_URL + 'weather?q=' + city + ',' + country + '&units=metric' + '&appid=' + process.env.REACT_APP_API_KEY;
-            console.log(fetchURL);
             fetch(fetchURL)
                 .then(res => {
                     if(res.ok){
@@ -39,18 +33,46 @@ const App = () => {
                 })
                 .catch(err => {
                     setIsModalOpen(true);
+                    setHasResult(false);
                     console.log(err);
                 })
         } else {
             // if user didn't enter valid city/country, 
             setIsModalOpen(true);
+            setHasResult(false);
         }
         setCity('');
         setCountry('');
     }
 
+    useEffect(() => {
+        if(Object.keys(displayData).length !== 0){
+            const weatherID = displayData.weather[0].id;
+            if(weatherID >= 200 && weatherID < 300){
+                setWeatherCond('lightning');
+            }
+            else if(weatherID >= 300 && weatherID < 600){
+                setWeatherCond('rainy');
+            }
+            else if(weatherID >= 600 && weatherID < 700){
+                //TODO: change to snowy
+                setWeatherCond('sunny');
+            }
+            else if(weatherID >= 700 && weatherID < 800){
+                setWeatherCond('mist');
+            }
+            else if(weatherID === 800){
+                setWeatherCond('sunny');
+            }
+            else {
+                setWeatherCond('cloudy');
+            }
+        }
+    }
+    , [displayData]);
+
     return (
-        <div className="app">
+        <div className={"app " + weatherCond}>
             <main>
                 <div className="search-box">
                 <form onSubmit={handleSubmit}>
@@ -72,22 +94,10 @@ const App = () => {
                 <Modal open={isModalOpen} onClose={() => {setIsModalOpen(false)}}>
                     Please input a valid city and country!
                 </Modal>
-                <Results hasResult={hasResult} displayData={displayData} toggleFarenheit={isToggleFarenheit}></Results>
-                {hasResult &&
-                <Switch isToggled={isToggleFarenheit} onToggle={
-                    () => {
-                        setIsToggleFarenheit(!isToggleFarenheit);
-                    }
-                }></Switch>}
+                {hasResult && <Results displayData={displayData}></Results>}
             </main>
         </div>
     )
 }
 
-export default App
-
-/*
-    1. get user geolocation
-    2. make api call to weather app using geolocation
-    3. display it
-*/
+export default App;

@@ -1,6 +1,9 @@
-import React from 'react'
+import React, {useState} from "react";
+import Switch from "./Switch";
 
-export default function Results({hasResult, children, displayData, toggleFarenheit}) {
+export default function Results({children, displayData}) {
+    const [isToggleFarenheit, setIsToggleFarenheit] = useState(false);
+
     const dateBuilder = (d) => {
         const months = ["January","February","March","April","May","June","July",
         "August","September","October","November","December"];
@@ -14,10 +17,6 @@ export default function Results({hasResult, children, displayData, toggleFarenhe
 
         return `${day} ${month} ${date}, ${year}`;
     }
-
-    if(!hasResult) {
-        return null;
-    }
     
   return (
     <>
@@ -26,10 +25,17 @@ export default function Results({hasResult, children, displayData, toggleFarenhe
             <div className="date">{dateBuilder(new Date())}</div>
         </div>
         <div className="weather-box">
-            <div className="temp">15</div>
-            <div className="weather">Sunny</div>
+            <div className="temp">
+                <Switch isToggled={isToggleFarenheit} onToggle={
+                () => {
+                   setIsToggleFarenheit(!isToggleFarenheit);
+                }
+                }></Switch>
+                {!isToggleFarenheit ? Math.round(displayData.main.temp*2)/2 + "°C" : 
+                    Math.round((displayData.main.temp*2))/2*9/5+32 + "°F"}
+            </div>
+            <div className="weather">{displayData.weather[0].main}</div>
         </div>
-        {toggleFarenheit && <div>FARENHEIT TOGGLED</div>}
     </>
   )
 }
