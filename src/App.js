@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import Modal from './Modal';
 import Results from "./Results";
 
@@ -12,6 +12,7 @@ const App = () => {
     const [hasResult, setHasResult] = useState(false);
     const [displayData, setDisplayData] = useState({});
     const [weatherCond, setWeatherCond] = useState('');
+    const cityContainer = useRef(null);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -34,6 +35,7 @@ const App = () => {
                 .catch(err => {
                     setIsModalOpen(true);
                     setHasResult(false);
+                    setWeatherCond('');
                     console.log(err);
                 })
         } else {
@@ -46,6 +48,7 @@ const App = () => {
     }
 
     useEffect(() => {
+        cityContainer.current.focus();
         if(Object.keys(displayData).length !== 0){
             const weatherID = displayData.weather[0].id;
             if(weatherID >= 200 && weatherID < 300){
@@ -79,7 +82,7 @@ const App = () => {
                     <div className="search-bars">
                         <input type="text" id="city" name="city" value={city}
                         placeholder="Enter a city"
-                        onChange={(e) => {setCity(e.target.value)}} className="search-bar"/>
+                        onChange={(e) => {setCity(e.target.value)}} className="search-bar" ref={cityContainer}/>
                     </div>
                     <div className="search-bars">
                         <input type="text" id="country" name="country" value={country}
